@@ -1,18 +1,34 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
   </div>
 </template>
-
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+import { Tab, Tabs } from 'vant';
 
 export default {
   name: 'home',
   components: {
-    HelloWorld,
+    [Tab.name]: Tab,
+    [Tabs.name]: Tabs,
+  },
+  data() {
+    return {
+      list: [],
+      params: {
+        offset: 0,
+      },
+    };
+  },
+  created() {
+    this.getList();
+  },
+  methods: {
+    getList() {},
   },
 };
 </script>
+<style lang="scss" scoped>
+.home {
+  height: 100%;
+}
+</style>
