@@ -7,30 +7,27 @@ import axios from 'axios';
 
 const instance = axios.create();
 
-// instance.interceptors.request.use(function (config) {
-//   // 在发送请求之前做些什么
-
-//   config.url = `${config.url}`
-//   return config;
-// }, function (error) {
-//   // 对请求错误做些什么
-//   return Promise.reject(error);
-// });
+// 添加token
+let token = localStorage.getItem('token') || undefined;
+instance.defaults.headers.common.authorization = token;
 
 // 添加响应拦截器
 instance.interceptors.response.use((response) => {
-    console.log(response);
-    // 对响应数据做点什么
-    if (response.status === 200) {
-      return response.data;
+  // 对响应数据做点什么
+  if (response.status === 200) {
+    // 刷新token
+    const newToken = response.headers.authorization;
+    if (newToken && newToken !== token) {
+      localStorage.setItem('token', newToken);
+      token = newToken;
     }
-    return Promise.reject(response);
-  }, error =>
-  // 对响应错误做点什么
-  Promise.reject(error));
+    return response.data;
+  }
+  return Promise.reject(response);
+}, error => Promise.reject(error));
 
 function install(Vue) {
   Vue.prototype.$http = Vue.$http = instance;
 }
 
-export default install
+export default install;

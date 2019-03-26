@@ -1,11 +1,58 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view @signin-success="resetToken" />
   </div>
 </template>
+<script>
+export default {
+  created () {
+    let token = localStorage.getItem('token');
+    if (token) {
+      this.valiToken()
+    } else {
+      this.$router.replace('/login')
+    }
+  },
+  methods: {
+    valiToken () {
+      this.refreshToken().then(res => {
+        if (!res.code) {
+          //token 有效 免登陆
+          this.$router.replace('/')
+          this.resetToken();
+        } else {
+          this.$router.replace('/login')
+        }
+      }).catch(err => {
+        this.$router.replace('/login')
+      });
+    },
+    resetToken () {
+      console.log('resetToken')
+      setInterval(() => {
+        this.refreshToken().then(res => {
+          if (res.code) {
+            this.$dialog.alert({
+              message: '登陆已过期，请重新登陆'
+            }).then(() => {
+              this.$router.replace('/login')
+            });
+          }
+        }).catch(err => {
+          console.log(err);
+        });
+      }, 60 * 60 * 1000)
+    },
+    refreshToken () {
+      // 更新token 失败就去登陆
+      return this.$http.get('/users/refreshRoken')
+    },
+  }
+
+}
+</script>
 
 <style lang="scss">
-
 html,
 body,
 #app {

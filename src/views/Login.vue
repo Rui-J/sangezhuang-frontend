@@ -82,7 +82,8 @@ export default {
         .then(res => {
           console.log(res);
           if (!res.code) {
-            this.requestAfter();
+            this.requestAfter({ type: 'success', message: '注册成功' });
+            this.status = 'signup';
           } else {
             this.requestAfter({
               type: 'fail',
@@ -104,7 +105,9 @@ export default {
       signin(this.signin)
         .then(res => {
           if (!res.code) {
+            this.$emit('signin-success')
             this.requestAfter();
+            this.$router.replace('/')
           } else {
             this.requestAfter({
               type: 'fail',
