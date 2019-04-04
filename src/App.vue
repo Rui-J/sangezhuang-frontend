@@ -14,6 +14,7 @@ export default {
     }
   },
   methods: {
+    // 验证token 失败就去登陆
     valiToken () {
       this.refreshToken().then(res => {
         if (!res.code) {
@@ -28,14 +29,14 @@ export default {
       });
     },
     resetToken () {
-      console.log('resetToken')
-      setInterval(() => {
+      let timer = setInterval(() => {
         this.refreshToken().then(res => {
           if (res.code) {
+            clearInterval(timer)
             this.$dialog.alert({
               message: '登陆已过期，请重新登陆'
             }).then(() => {
-              this.$router.replace('/login')
+              this.$router.push('/login')
             });
           }
         }).catch(err => {
@@ -44,11 +45,9 @@ export default {
       }, 60 * 60 * 1000)
     },
     refreshToken () {
-      // 更新token 失败就去登陆
       return this.$http.get('/users/refreshRoken')
     },
   }
-
 }
 </script>
 
